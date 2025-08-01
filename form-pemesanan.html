@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulir Pemesanan - Trepel App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .input-field-form {
+            border: 1px solid #0369A1; background-color: white; width: 100%;
+            padding: 12px; font-size: 1rem; outline: none; border-radius: 0.5rem;
+        }
+        .input-label-form {
+            color: #0369A1; font-size: 0.75rem; font-weight: 600; background-color: #f0f9ff;
+            padding: 0 4px; position: absolute; top: -10px; left: 12px;
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto bg-white">
+    <div class="bg-gradient-to-b from-blue-200 to-blue-50 min-h-screen">
+        <header class="flex items-center p-4 bg-white shadow sticky top-0">
+            <a href="index.html" class="p-2 rounded-full hover:bg-gray-100">
+                <i class="ph-arrow-left text-2xl"></i>
+            </a>
+            <h1 class="text-xl font-bold mx-auto">FORMULIR PEMESANAN</h1>
+        </header>
+
+        <div id="warning-box" class="hidden p-4 mx-6 mt-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center">
+            <p id="warning-text"></p>
+        </div>
+        
+        <form id="pemesanan-form" class="p-6 space-y-6 pb-40">
+            <div class="relative">
+                    <label for="lokasi" class="input-label-form">LOKASI KEBERANGKATAN</label>
+                    <select id="lokasi" name="lokasi" class="input-field-form" required>
+                        <option value="" disabled selected>-- Pilih kota keberangkatan --</option>
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="Bandung">Bandung</option>
+                        <option value="Semarang">Semarang</option>
+                        <option value="Yogyakarta">Yogyakarta</option>
+                        <option value="Surabaya">Surabaya</option>
+                        <option value="Serang">Serang</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <label for="tujuan" class="input-label-form">TUJUAN</label>
+                    <select id="tujuan" name="tujuan" class="input-field-form" required>
+                        <option value="" disabled selected>-- Pilih kota tujuan --</option>
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="Bandung">Bandung</option>
+                        <option value="Semarang">Semarang</option>
+                        <option value="Yogyakarta">Yogyakarta</option>
+                        <option value="Surabaya">Surabaya</option>
+                        <option value="Serang">Serang</option>
+                    </select>
+                </div>
+            <div class="relative">
+                <label class="input-label-form">PILIH BUS</label>
+                <select id="bus" name="bus" class="input-field-form" required>
+                    <option value="" data-harga="0" disabled selected>-- Pilih jenis bus --</option>
+                    <option value="Ekonomi" data-harga="85000">Ekonomi - Rp 85.000</option>
+                    <option value="Bisnis" data-harga="115000">Bisnis - Rp 115.000</option>
+                    <option value="Eksekutif" data-harga="150000">Eksekutif - Rp 150.000</option>
+                </select>
+            </div>
+            <div class="relative">
+                <label class="input-label-form">PILIH JADWAL</label>
+                <input type="date" id="jadwal" name="jadwal" class="input-field-form" required>
+            </div>
+            <div class="relative">
+                <label class="input-label-form">METODE PEMBAYARAN</label>
+                <select id="metode" name="metode" class="input-field-form" required>
+                    <option value="Cash">Cash</option>
+                    <option value="E-money">E-money</option>
+                </select>
+            </div>
+        </form>
+
+        <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white p-4 border-t">
+            <div class="flex justify-between mb-2">
+                <div class="text-left">
+                    <h3 class="text-sm text-gray-500">INFO TOTAL BAYAR</h3>
+                    <p id="info-perhitungan" class="text-sm">Rp 0</p>
+                </div>
+                <div class="text-right">
+                    <h3 class="font-bold">TOTAL</h3>
+                    <p id="info-total" class="font-bold">Rp 0</p>
+                </div>
+            </div>
+            <button id="konfirmasi-btn" class="w-full bg-blue-500 text-white text-center py-3 rounded-lg font-semibold">KONFIRMASI</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('pemesanan-form');
+            const busSelect = document.getElementById('bus');
+            const infoPerhitungan = document.getElementById('info-perhitungan');
+            const infoTotal = document.getElementById('info-total');
+            const konfirmasiBtn = document.getElementById('konfirmasi-btn');
+
+            // Elemen untuk pesan peringatan
+            const warningBox = document.getElementById('warning-box');
+            const warningText = document.getElementById('warning-text');
+            const lokasiSelect = document.getElementById('lokasi');
+            const tujuanSelect = document.getElementById('tujuan');
+
+            function hideWarning() {
+                warningBox.classList.add('hidden');
+            }
+
+            // Sembunyikan peringatan jika pengguna mengubah pilihan
+            lokasiSelect.addEventListener('change', hideWarning);
+            tujuanSelect.addEventListener('change', hideWarning);
+
+            // Update price when bus is selected
+            busSelect.addEventListener('change', () => {
+                const selectedOption = busSelect.options[busSelect.selectedIndex];
+                const harga = parseInt(selectedOption.dataset.harga) || 0;
+                const formattedHarga = `Rp ${harga.toLocaleString('id-ID')}`;
+                infoPerhitungan.textContent = formattedHarga;
+                infoTotal.textContent = formattedHarga;
+            });
+
+            // Handle confirmation button click
+            konfirmasiBtn.addEventListener('click', () => {
+                // Sembunyikan peringatan setiap kali tombol diklik
+                hideWarning();
+
+                const lokasi = lokasiSelect.value;
+                const tujuan = tujuanSelect.value;
+
+                // Check if form is valid
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                // Cek jika lokasi dan tujuan sama
+                if (lokasi && lokasi === tujuan) {
+                    warningText.textContent = "Lokasi keberangkatan dan tujuan tidak boleh sama.";
+                    warningBox.classList.remove('hidden'); // Tampilkan box peringatan
+                    return; // Menghentikan eksekusi lebih lanjut
+                }
+
+                const bus = busSelect.value;
+                const jadwal = document.getElementById('jadwal').value;
+                const metode = document.getElementById('metode').value;
+                
+                const selectedBusOption = busSelect.options[busSelect.selectedIndex];
+                const harga = selectedBusOption.dataset.harga;
+
+                // Construct URL with parameters
+                const params = new URLSearchParams({
+                    lokasi,
+                    tujuan,
+                    bus,
+                    jadwal,
+                    metode,
+                    harga
+                });
+
+                // Redirect to confirmation page
+                window.location.href = `konfirmasi-pembayaran.html?${params.toString()}`;
+            });
+        });
+    </script>
+</body>
+</html>

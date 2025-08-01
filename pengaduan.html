@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaduan - Trepel App</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Font: Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <style>
+        /* Apply the Poppins font family and a default background color */
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: #E0F2FE; /* Light blue background like other pages */
+        }
+        /* Style for the bottom navigation bar */
+        .bottom-nav { 
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); 
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto bg-white">
+
+    <!-- Main container for the page content -->
+    <div class="bg-slate-100 min-h-screen pb-28">
+        
+        <!-- Header Section, consistent with other pages -->
+        <header class="flex items-center p-4 bg-white shadow sticky top-0 z-20">
+            <a href="index.html" class="p-2 rounded-full hover:bg-gray-100">
+                <i class="ph-arrow-left text-2xl"></i>
+            </a>
+            <h1 class="text-xl font-bold mx-auto">PENGADUAN</h1>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="p-4">
+            
+            <!-- Warning Box (hidden by default) -->
+            <div id="warning-box" class="hidden p-4 mb-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center">
+                <p id="warning-text"></p>
+            </div>
+
+            <!-- Complaint Form -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="font-bold text-lg mb-2 text-gray-700">Formulir Pengaduan</h3>
+                <p class="text-sm text-gray-600 mb-6">Silakan sampaikan keluhan atau pertanyaan Anda di bawah ini. Tim kami akan segera merespons.</p>
+                
+                <form id="complaint-form">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="subject" class="text-sm font-semibold text-gray-600">Subjek</label>
+                            <input type="text" id="subject" name="subject" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Contoh: Masalah dengan tiket">
+                        </div>
+                        <div>
+                            <label for="message" class="text-sm font-semibold text-gray-600">Pesan Anda</label>
+                            <textarea id="message" name="message" class="mt-1 w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" rows="6" placeholder="Tuliskan detail pengaduan Anda di sini..."></textarea>
+                        </div>
+                        <div>
+                             <button type="submit" class="w-full bg-blue-500 text-white text-center py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors">
+                                KIRIM PENGADUAN
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bottom Navigation Bar, consistent with other pages -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white grid grid-cols-3 text-center py-2 border-t bottom-nav z-20">
+        <a href="index.html" class="text-gray-500 hover:text-blue-500">
+            <i class="ph-house text-2xl"></i>
+            <span class="block text-xs">BERANDA</span>
+        </a>
+        <a href="riwayat.html" class="text-gray-500 hover:text-blue-500">
+            <i class="ph-clock-counter-clockwise text-2xl"></i>
+            <span class="block text-xs">RIWAYAT</span>
+        </a>
+        <a href="akun.html" class="text-gray-500 hover:text-blue-500">
+            <i class="ph-user-circle text-2xl"></i>
+            <span class="block text-xs">AKUN</span>
+        </a>
+    </nav>
+
+    <script>
+        const complaintForm = document.getElementById('complaint-form');
+        const subjectInput = document.getElementById('subject');
+        const messageInput = document.getElementById('message');
+        const warningBox = document.getElementById('warning-box');
+        const warningText = document.getElementById('warning-text');
+
+        complaintForm.addEventListener('submit', function(event) {
+            // Prevent the form from submitting by default
+            event.preventDefault();
+
+            // Hide the warning box on each new attempt
+            warningBox.classList.add('hidden');
+
+            // Check if either the subject or message is empty
+            if (subjectInput.value.trim() === '' || messageInput.value.trim() === '') {
+                // If empty, show the custom warning message
+                warningText.textContent = 'Harap isi semua kolom sebelum mengirim.';
+                warningBox.classList.remove('hidden');
+            } else {
+                // If both fields are filled, show success message and redirect
+                alert('Pengaduan Anda telah berhasil dikirim. Terima kasih!');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+
+</body>
+</html>

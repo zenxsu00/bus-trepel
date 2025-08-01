@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promo - Trepel App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #E0F2FE; }
+        .bottom-nav { box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="max-w-md mx-auto bg-white">
+    <div class="bg-slate-100 min-h-screen pb-20">
+        <header class="flex items-center p-4 bg-white shadow sticky top-0">
+            <a href="index.html" class="p-2 rounded-full hover:bg-gray-100">
+                <i class="ph-arrow-left text-2xl"></i>
+            </a>
+            <h1 class="text-xl font-bold mx-auto">PROMO</h1>
+        </header>
+        <div class="p-4 space-y-3">
+            <h2 class="font-bold text-lg mb-2">PROMO TERSEDIA</h2>
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <img src="sate.png" class="w-full h-32 object-cover" alt="Promo">
+                <div class="p-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold">BARUDAKS BANDUNG</h3>
+                            <p class="text-xs text-gray-500">15/01/2025 12:00 - 15/02/2025 12:00</p>
+                        </div>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-md text-sm">CLAIM</button>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <img src="monas.png" class="w-full h-23 object-cover" alt="Promo">
+                <div class="p-3">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="font-bold">MONAS JAKARTA</h3>
+                            <p class="text-xs text-gray-500">15/01/2025 12:00 - 15/02/2025 12:00</p>
+                        </div>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-md text-sm">CLAIM</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white grid grid-cols-3 text-center py-2 border-t bottom-nav">
+        <a href="index.html" class="text-blue-500">
+            <i class="ph-house text-2xl"></i><span class="block text-xs">BERANDA</span>
+        </a>
+        <a href="riwayat.html" class="text-gray-500">
+            <i class="ph-clock-counter-clockwise text-2xl"></i><span class="block text-xs">RIWAYAT</span>
+        </a>
+        <a href="akun.html" class="text-gray-500">
+            <i class="ph-user-circle text-2xl"></i><span class="block text-xs">AKUN</span>
+        </a>
+    </nav>
+</body>
+</html>
