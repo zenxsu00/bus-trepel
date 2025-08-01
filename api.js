@@ -1,116 +1,116 @@
-// Alamat dasar dari backend API Anda yang sudah online
-// Menggunakan domain yang Anda berikan.
-const API_BASE_URL = 'http://zenxsu-001-site1.mtempurl.com';
+// db-firebase.js
 
-/**
- * Fungsi untuk menangani registrasi pengguna.
- * @param {object} userData - Data lengkap pengguna dari formulir registrasi.
- * @returns {Promise<object>} Respons dari server.
- */
-async function registerUser(userData) {
-    const response = await fetch(`${API_BASE_URL}/register`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-    });
+// Import fungsi yang diperlukan dari Firebase SDK
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { 
+    getFirestore, 
+    doc, 
+    setDoc,
+    getDoc, 
+    collection, 
+    addDoc, 
+    getDocs, 
+    query, 
+    orderBy,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Registrasi gagal.');
-    }
+// ===============================================================
+// ||         PENTING: GANTI DENGAN KONFIGURASI ANDA            ||
+// ===============================================================
+// Tempel (paste) objek firebaseConfig yang Anda salin dari Firebase di sini
+const firebaseConfig = {
+    apiKey: "AIzaSy...",
+    authDomain: "nama-proyek.firebaseapp.com",
+    projectId: "nama-proyek",
+    storageBucket: "nama-proyek.appspot.com",
+    messagingSenderId: "...",
+    appId: "1:..."
+};
+// ===============================================================
 
-    return response.json();
+// Inisialisasi Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// --- FUNGSI AUTENTIKASI ---
+
+async function registerUser(profileData, password) {
+    const userCredential = await createUserWithEmailAndPassword(auth, profileData.email, password);
+    const user = userCredential.user;
+    // Simpan data profil ke koleksi 'users' dengan ID dari Auth
+    await setDoc(doc(db, "users", user.uid), profileData);
+    return userCredential;
 }
 
-/**
- * Fungsi untuk menangani login pengguna.
- * @param {string} email - Email pengguna.
- * @param {string} password - Password pengguna.
- * @returns {Promise<object>} Data pengguna jika login berhasil.
- */
 async function loginUser(email, password) {
-    const response = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Login gagal.');
-    }
-
-    const userData = await response.json();
-    // Simpan data pengguna di localStorage untuk sesi login
-    localStorage.setItem('currentUser', JSON.stringify(userData));
-    return userData;
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    // Simpan status login di sessionStorage agar tidak hilang saat refresh
+    sessionStorage.setItem('userLoggedIn', 'true');
+    return userCredential;
 }
 
-/**
- * Fungsi untuk logout.
- */
 function logoutUser() {
-    // Hapus data pengguna dari localStorage
-    localStorage.removeItem('currentUser');
-    // Arahkan ke halaman login
+    sessionStorage.removeItem('userLoggedIn');
+    signOut(auth);
     window.location.href = 'loginpage.html';
 }
 
-/**
- * Mengambil data pengguna yang sedang login dari localStorage.
- * @returns {object|null} Data pengguna atau null jika tidak ada.
- */
 function getCurrentUser() {
-    const user = localStorage.getItem('currentUser');
-    return user ? JSON.parse(user) : null;
+    return auth.currentUser;
 }
 
-/**
- * Menambahkan transaksi baru ke database.
- * @param {object} transactionData - Data transaksi.
- * @returns {Promise<object>} Respons dari server.
- */
-async function addTransaction(transactionData) {
-    const response = await fetch(`${API_BASE_URL}/transactions`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(transactionData),
+// --- FUNGSI PROFIL ---
+
+async function getUserProfile(userId) {
+    const userDocRef = doc(db, "users", userId);
+    const userDocSnap = await getDoc(userDocRef);
+    if (userDocSnap.exists()) {
+        return userDocSnap.data();
+    }
+    return null;
+}
+
+// --- FUNGSI TRANSAKSI ---
+
+async function addTransaction(userId, transactionData) {
+    const historyCollectionRef = collection(db, "users", userId, "transactions");
+    return await addDoc(historyCollectionRef, {
+        ...transactionData,
+        tanggalPemesanan: serverTimestamp()
     });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Gagal menyimpan transaksi.');
-    }
-
-    return response.json();
 }
 
-/**
- * Mengambil riwayat transaksi seorang pengguna.
- * @param {number} userId - ID pengguna.
- * @returns {Promise<Array>} Array berisi riwayat transaksi.
- */
 async function getTransactionHistory(userId) {
-    const response = await fetch(`${API_BASE_URL}/transactions/${userId}`);
-    
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Gagal mengambil riwayat transaksi.');
-    }
-
-    return response.json();
+    const history = [];
+    const historyCollectionRef = collection(db, "users", userId, "transactions");
+    const q = query(historyCollectionRef, orderBy("tanggalPemesanan", "desc"));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+        history.push({ id: doc.id, ...doc.data() });
+    });
+    return history;
 }
 
-// Ekspor fungsi-fungsi agar bisa digunakan di file lain
+// Ekspor semua fungsi
 export {
     registerUser,
     loginUser,
+    logoutUser,
+    getCurrentUser,
+    onAuthStateChanged,
+    getUserProfile,
+    addTransaction,
+    getTransactionHistory
+};
     logoutUser,
     getCurrentUser,
     addTransaction,
